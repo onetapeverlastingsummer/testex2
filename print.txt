@@ -5,7 +5,6 @@
 @trigger 
 interval(1)
 if(first()){
-III=findPlayerBySteamID("STEAM_0:1:503503912")
-III:psGive(owner():psGet())
+
 }
 
