@@ -1,1 +1,24 @@
-print("Hello!")
+@name neiro
+@inputs 
+@outputs Input1
+@persist [Input1 Off Input2 Input3]:number
+@trigger 
+interval(1)
+if(first()){
+Off=1  
+Input1=1
+}
+
+Input2=5420
+Input3=345
+if(Input1==Input2){
+    Off=0
+End=Input3/Input1
+if(changed(Input1==Input2)){
+print("[c 255,0,0] "+End)        
+}
+}elseif(Off!=0){
+Input1=round(random(1,Input2))
+}
+
+
