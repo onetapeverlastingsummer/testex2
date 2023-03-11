@@ -1,1 +1,237 @@
+@name MusicPlayerByOneTap
+@inputs 
+@outputs 
+@persist [OM Num TimeLoop Information]:number  [I Rad Smooth B SEC Loop III]:number 
+@persist [GTableInformation M]:gtable 
+@persist [PlayerUser OTPlayer]:string
+@persist [E O Holo]:entity 
+@model models/hunter/blocks/cube05x05x05.mdl
+#[
+POWERED BY:
+||===              /\\          ||      ||  |================|          /\\         ||============||
+||    ==          // \\         ||      ||          ||                 // \\        ||            ||
+||     ==        //   \\        ||      ||          ||                //   \\       ||            ||
+||    ==        //     \\       ||      ||          ||               //     \\      ||            ||
+||====         //       \\      ||======||          ||              //       \\     ||            ||
+||====        //=========\\     ||      ||          ||             //=========\\    ||            ||
+||    ===    //           \\    ||      ||          ||            //           \\   ||            ||
+||    ===   //             \\   ||      ||          ||           //             \\  ||            ||
+||====     //               \\  ||      ||          ||          //               \\ ||            ||
+]#
+#===================================#
+    M=gTableSafe(1)
+    GTableInformation=gTable("r6e8g45sa64re6gr55s6345ghsge36r45g635f1523v2",1)
+    holoColor(1,vec(160,20,100))
+    runOnTick(1)
+#===================================#   
+    if(first()){
+        O=owner()
+        E=entity()    
+    }
+    OTPlayer = "МУЗЫКАЛЬНЫЙ ПЛЕЕР ОТ: |ВАН ТАП|"
+    if(Loop==1){
+        soundURLplay("12")    
+    }
+    PlayerUser="Player User: "+O:name()
+    Health=O:health()
+    Armor=O:armor()
+    if(O:inGodMode()==1){
+        God="On"    
+    }else{
+        God="Off"    
+    }
+    function chipName(){
+        Inf = OTPlayer+"\n"+PlayerUser+"\n"+"God Mode: "+God+"\n"+"Health: "+Health+"\n"+"Armor: "+Armor
+        E:setName(Inf)
+    }
+    function writeLoopStatus(){
+        GTableInformation["Loop",number]=Loop    
+    }
+#====================================================================================================================#
+    if(first()){
+        noDuplications()
+        Num=0
+        OM=0
+        Rad=25
+        Smooth=3
+        Information=1
+        chipName()
+        E:propFreeze(0)
+        E:setMaterial("Models/effects/comball_tape")
+        E:setColor(0,0,0)
+        E:drawShadow(0)
+        noCollideAll(E,1)
+        if(!GTableInformation:toTable():exists("Loop")){
+            Loop=1
+            O:soundPlay(1,3,"npc/scanner/combat_scan3.wav")
+            hint("No settings entries found, default settings set!",5)
+            writeLoopStatus()
+        }elseif(GTableInformation["Loop",number]){
+            O:soundPlay(1,3,"npc/scanner/combat_scan5.wav")
+            Loop=GTableInformation["Loop",number]
+            hint("Loop mode changed to "+GTableInformation["Loop",number],3)
+        }
+        Holo=holoCreate(1,E:pos(),vec(0.09,0.09,0.09),ang(0,0,0),vec(200),"models/props_phx/facepunch_logo.mdl")
+        lightCreate(1)
+        lightParent(1,Holo)
+        lightColor(1,vec(255,20,10))
+        Rand=random(1,1000)
+        lightDistance(1,Rand)
+        lightBrightness(1,Rand)
+        hint("Enter: \"p!help\" to learn all commands)",5)
+    }
 
+#====================================================================================================================#
+    I=(I+2.5)%360
+    EndPos=O:toWorld(vec(5,5,100))+vec(sin(I)*Rad,cos(I)*Rad,0)
+    Elevation=Holo:pos()+(EndPos-Holo:pos())/Smooth
+    holoAng(1,ang(I+I+0))
+    holoPos(1, Elevation)
+    E:setPos(holoEntity(1):pos())
+    E:setAng(holoEntity(1):angles())
+    if(Information==1&(changed(God)&God|changed(Health)&Health|changed(Armor)&Armor|changed(PlayerUser)&PlayerUser|changed(I)&I)&&O:lastSaid():explode(" ")[1,string]!="p!play"){
+        chipName()
+    }
+#====================================================================================================================#
+	   function queueplay(){
+			     if(OM>Num){
+				        OM=0    
+        }
+        OM++
+        GAT = M[OM,table]:toString():explode("="):string(2):explode("	"):string(2):explode("_-_"):string(2):explode("."):string(1):explode("b128"):string(1)
+        soundURLload("12",M[OM,table]:toString():explode("="):string(2):explode("	"):string(2),1,0,Holo)
+        print("Playing.. "+GAT)
+        E:setName("NOW PLAYING: "+GAT)
+        }
+#====================================================================================================================#
+    if(clk("PlaySongQueue")){
+        queueplay()
+    }
+    if(clk("ErrorValue")){
+        soundURLplay("12")  
+        Loop=1
+        hint("Looping is set to "+Loop+"!",6)   
+    }
+        writeLoopStatus()    
+#====================================================================================================================#
+    runOnChat(1)
+    if(chatClk(O)){
+        T=O:lastSaid():explode(" ")
+        if(T[1,string]=="p!help"){
+           hideChat(1)
+        print("[c 0,0,0]#[c %180][b]MUSIC PLAYER BY ONETAP[/c][/b][c 0,0,0]#")
+        print("[c %180]p!play [/c]- plays the song, if enter \"1\" after URL then you can add the song to the queue")
+        print("[c %180]p!volume [/c]- changes the volume of the song")
+        print("[c %180]p!next [/c]- run the next song in the queue")
+        print("[c %180]p!stop [/c]- stops the song")
+        print("[c %180]p!re [/c]- rewound the music")
+        print("[c %180]p!pause [/c]- pause")
+        print("[c %180]p!resume [/c]- continues the song")
+        print("[c %180]p!loop [/c]- changes the looping mode of the song")
+        print("[c %180]p!queue [/c]- shows the queue of ur songs")
+        print("[c %180]p!queue clear[/c]- clear the queue")
+    }
+#====================================================================================================================#
+    if(T[1,string]=="p!play"){
+        hideChat(1)
+        if(T[2,string]:length()>5){
+            if(T[3,string]!="1"){
+            soundURLload("12",T[2,string],1,0,Holo)
+            GAT=T[2,string]:explode("_-_"):string(2):explode("."):string(1):explode("b128"):string(1)
+            print("Playing.. "+GAT)
+            E:setName("NOW PLAYING: "+GAT)
+            }
+        }
+        if(T[3,string]=="1"){
+            M[Num+1, table] = table(T[2,string])
+            Num++
+            print(T[2,string]:explode("_-_"):string(2):explode("."):string(1):explode("b128"):string(1)+" succsessful added to queue!")
+        }
+    }
+    if(T[1,string]=="p!queue"&T[2,string]=="clear"){
+        hideChat(1)
+            for(III=0,Num){
+                #print(M[III,table]:toString())
+                M:removeTable(III:toString())
+            }
+    }elseif(T[1,string]=="p!queue"&T[2,string]!="clear"){
+        hideChat(1)
+        for(III=0,Num){
+            print(M[III,table]:toString())
+        }
+    }
+#====================================================================================================================#
+    if(T[1,string]=="p!volume"){
+            soundURLvolume("12", T[2,string]:toNumber())
+            print("Volume changed to "+T[2,string])
+    }
+#====================================================================================================================#
+    if(T[1,string]=="p!next"){
+        if(Loop==0){
+			         soundURLPurge()
+            hideChat(1)
+            queueplay()
+    }else{
+        hideChat(1)
+        soundURLPurge()
+        timer("PlaySongQueue",1000)
+        O:soundPlay(1,3,"npc/scanner/combat_scan5.wav")
+        hint("/!\\ RECOMMENDATION /!\\",2.5)
+        hint("It is recomended to disable song looping! ( ͡° ͜ʖ ͡°)",5)
+        }
+    }
+#====================================================================================================================#
+    if(T[1,string]=="p!stop"){
+        hideChat(1)
+        soundURLPurge()
+        hint("Music was stopped..",3)
+        Information=1
+    }else{
+        Information=0    
+    }
+#====================================================================================================================#
+    if(T[1,string]=="p!re"){
+        hideChat(1)
+        SEC=T[2,string]:toNumber()
+        soundURLtime("12",SEC)
+        hint("The music was rewound for "+SEC+ " sec",5)
+    }
+#====================================================================================================================#
+    if(T[1,string]=="p!pause"){
+        hideChat(1)
+        if(Loop==1){
+            TimeLoop=1
+            Loop=0
+            soundURLpause("12")
+        }else{
+            TimeLoop=0
+            soundURLpause("12")    
+        }   
+        hint("Paused",3)
+    }
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=# 
+    if(T[1,string]=="p!resume"){
+        hideChat(1)
+        if(TimeLoop==1){
+            Loop=1    
+        }else{
+        soundURLplay("12")
+        }
+        hint("Music was resumed...",3)
+    }
+#====================================================================================================================#
+    if(T[1,string]=="p!loop"){
+            hideChat(1)
+        if(T[2,string]:toNumber()==1|T[2,string]:toNumber()==0){
+            Loop=T[2,string]:toNumber()
+            hint("looping changed to "+Loop,4)
+        }else{
+          Loop=0
+          soundURLpause("12")
+          timer("ErrorValue",900)
+          O:soundPlay(1,3,"npc/scanner/combat_scan3.wav")
+          hint("/!\\ ERROR /!\\",6)
+          hint("Incorrect value, please enter 1 or 0",6)  
+        }
+    }
+}
