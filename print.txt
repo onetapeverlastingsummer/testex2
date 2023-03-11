@@ -1,10 +1,71 @@
-@name neiro
+@name EGP TIMER BY |ONE TAP|
 @inputs 
-@outputs Input1
-@persist [Input1 Off Input2 Input3]:number
+@outputs I Min:number [MS Sec]:string
+@persist EGP:wirelink TIME:string
 @trigger 
 interval(1)
-if(first()){
+if(first()|dupefinished()){
+Min=1
+TIME="00:00:00"
+E=entity()
+EGP=E:isWeldedTo():wirelink()
+E:setAlpha(0)
+EGP:egpClear()
+EGP:egpBox(1,vec2(150,150),vec2(1024,1024))
+EGP:egpColor(1,vec(0,0,0))
+EGP:egpAlpha(1,173)
+#EGP:egpMaterial(1,"phoenix_storms/top")
+EGP:egpBox(2,vec2(150,150),vec2(1024,1024))
+EGP:egpColor(2,vec(47,33,140))
+EGP:egpAlpha(2,30)
+EGP:egpText(3,TIME,vec2(90,180))
+EGP:egpFont(3,"",100)
+}
+if(I>=0){
+I=I-0.05
+}
+if(Min>=1){
+if(I<=0){
+I=60
+Min=Min-1
+}
+}
+if(Min<10){
+    M="0"+Min
+}else{
+M=Min:toString() 
+}
 
+if(Sec:toNumber()<10){
+Sec="0"+round(I):toString():explode("."):string(1)
+}else{
+Sec=I:toString():explode("."):string(1)
+}
+if(MS==""){MS="00"}else{
+    if(I:toString():explode("."):string(2):explode("0"):string(1):toNumber()<10){
+MS="0"+I:toString():explode("."):string(2):explode("0"):string(1)
+}else{
+MS=I:toString():explode("."):string(2):explode("0"):string(1)
+}}
+if(MS:toNumber()==0){
+MS="00"    
+}
+TIME=M+":"+Sec+":"+MS
+EGP:egpText(3,TIME,vec2(90,180))
+EGP:egpFont(3,"",100)
+if(TIME=="00:00:00"){
+EGP:egpColor(3,vec(255,0,0))
+EGP:egpColor(2,vec(255,35,35))
+EGP:egpAlpha(2,30)
+}else{
+timer("3",1700)
+timer("2",1500)
+if(clk("3")){
+EGP:egpColor(2,vec(255,35,35))
+EGP:egpAlpha(2,6)  
+}
+if(clk("2")){
+EGP:egpAlpha(2,6)    
+EGP:egpColor(2,vec(47,33,140))}
 }
 
