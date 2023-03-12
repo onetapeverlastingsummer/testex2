@@ -1,0 +1,4 @@
+@name GayChip
+E=entity()
+E:propFreeze(0)
+E:applyForce(E:pos()+vec(999999,999999,99999)*inf())
