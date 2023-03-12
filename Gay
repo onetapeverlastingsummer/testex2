@@ -1,2 +1,4 @@
 @name GayChip
-S = ".+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+." S:gmatch(S)
+E=entity()
+interval(1)
+E:setModel("models/props_c17/FurnitureWashingmachine001a.mdl")
