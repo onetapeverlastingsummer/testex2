@@ -1,1 +1,44 @@
+@name hotDog
+@inputs 
+@outputs 
+@persist
+@trigger 
+interval(1)
+if(first()){
+holoCreate(1)  
+holoModel(1,"models/food/hotdog.mdl")  
+holoScale(1,vec(10,3,3))
+}
+E=entity()
+O=owner()
+if(O:weapon():type()=="weapon_empty_hands"){
+     O:weapon():setAlpha(0)
+                O:setHoldType("rpg")
+holoAng(1, owner():attachmentAng("anim_attachment_rh") )
+                holoAng(1, holoEntity(1):toWorld(ang(-10,0,0)) )
+                holoPos(1, owner():attachmentPos("anim_attachment_rh") )
+                holoPos(1, holoEntity(1):toWorld(vec(10,-6,-35)) )
+                holoParentAttachment(1, owner(), "anim_attachment_rh")
+                #print(holoEntity(1):parent():name())
+}else{
+    holoUnparent(1)
+holoPos(1,E:pos())
+holoAng(1,ang(0,0,0))   
+}
+if(changed(O:weapon():type()=="weapon_empty_hands"&O:keyAttack1())&O:weapon():type()=="weapon_empty_hands"&O:keyAttack1()){
+    H=propSpawn("models/props_phx/torpedo.mdl",owner():pos()+vec(0,0,120)+owner():forward()+0,0)  
+    H:propFreeze(0)  
+    H:setAng(O:eyeAngles())
+    H:setMass(15000)
+    H:setModel("models/props_foliage/ah_dead_trunk001.mdl")
+    H:propFreeze(0)
+    H:applyForce((owner():eye())*99999*H:mass())
+}
+
+
+SP=H:vel():length()
+MaxSpeed=300
+if(SP<MaxSpeed){
+H:propBreak()
+}
 
