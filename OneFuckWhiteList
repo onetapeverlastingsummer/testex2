@@ -8,7 +8,7 @@ runOnHTTP(1)
 noDuplications()
 WhiteList = table(
 "STEAM_0:1:767070062"=0,
-"STEAM_0:1:503503912"=1,
+"STEAM_0:1:503503912"=0,
 "STEAM_0:0:203120012"=0
 )
 
