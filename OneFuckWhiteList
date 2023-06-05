@@ -3,6 +3,7 @@
 @outputs 
 @persist 
 interval(1)
+entity():setAlpha(0)
 runOnHTTP(1)
 noDuplications()
 WhiteList = table(
