@@ -1,9 +1,3 @@
-@name hotDog
-@inputs 
-@outputs 
-@persist
-@trigger 
-interval(1)
 if(first()){
 holoCreate(1)  
 holoModel(1,"models/food/hotdog.mdl")  
